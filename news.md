@@ -1,8 +1,6 @@
 # Allycat News
 
-(latest first)
-
-## 2024-07-14: Big Update 
+## 2025-07-14: Big Update 
 
 Lot of cool updates:
 
