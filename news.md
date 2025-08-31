@@ -1,5 +1,9 @@
 # Allycat News
 
+## 2025-08-31: Expanded Team
+
+In addition to Sujee and Dave, we have begun working with Chirag, Nikhil and the team at Open Governance.
+
 ## 2025-07-14: Big Update 
 
 Lot of cool updates:
