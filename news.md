@@ -2,7 +2,7 @@
 
 ## 2025-08-23: Expanded Team
 
-In addition to Sujee and Dave, we have begun working with Chirag, Nikhil and the team at ([Open Governance](https://www.opgov.ai))
+In addition to Sujee and Dave, we have begun working with Chirag, Nikhil and the team at [Open Governance](https://www.opgov.ai)
 
 ## 2025-07-14: Big Update 
 
