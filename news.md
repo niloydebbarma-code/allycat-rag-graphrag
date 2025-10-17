@@ -1,5 +1,9 @@
 # Allycat News
 
+## 2025-10-17: GraphRAG
+
+Niloy Deb Barma from Vel Tech University in Chennai is the process of adding GraphRAG to AllyCat.  
+
 ## 2025-08-23: Expanded Team
 
 In addition to Sujee and Dave, we have begun working with Chirag, Nikhil and the team at [Open Governance](https://www.opgov.ai)
