@@ -2,7 +2,7 @@
 
 ## 2025-10-17: GraphRAG
 
-Niloy Deb Barma from Vel Tech University in Chennai is the process of adding GraphRAG to AllyCat.  
+Niloy Deb Barma from [Vel Tech University](https://www.veltech.edu.in/btech-admissions/) in Chennai is the process of adding GraphRAG to AllyCat.  
 
 ## 2025-08-23: Expanded Team
 
