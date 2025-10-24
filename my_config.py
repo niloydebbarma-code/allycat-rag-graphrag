@@ -17,11 +17,12 @@ MY_CONFIG = MyConfig ()
 ## See sample .env file 'env.sample.txt' for reference
 
 ## HuggingFace config
-MY_CONFIG.HF_ENDPOINT = os.getenv("HF_ENDPOINT", "https://hf-mirror.com")
+MY_CONFIG.HF_ENDPOINT = os.getenv("HF_ENDPOINT", "https://thealliance.ai/")
 
 ## Crawl settings
-MY_CONFIG.CRAWL_MAX_DOWNLOADS = 100
-MY_CONFIG.CRAWL_MAX_DEPTH = 3
+MY_CONFIG.WEBSITE_URL = os.getenv("WEBSITE_URL", "")
+MY_CONFIG.CRAWL_MAX_DOWNLOADS = int(os.getenv("CRAWL_MAX_DOWNLOADS", 100))
+MY_CONFIG.CRAWL_MAX_DEPTH = int(os.getenv("CRAWL_MAX_DEPTH", 3))
 MY_CONFIG.WAITTIME_BETWEEN_REQUESTS = float(os.getenv("WAITTIME_BETWEEN_REQUESTS", 0.1)) # in seconds
 MY_CONFIG.CRAWL_MIME_TYPE = 'text/html'
 
