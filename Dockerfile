@@ -58,3 +58,4 @@ EXPOSE 8080
 EXPOSE 11434
 
 ENTRYPOINT ["./docker-startup.sh"]
+CMD ["deploy"]
