@@ -173,7 +173,7 @@ class WebScraper:
 
 def main():
     parser = argparse.ArgumentParser(description="Web scraper")
-    parser.add_argument("--url", type=str, required=True, help="URL to scrape")
+    parser.add_argument("--url", type=str, default=MY_CONFIG.WEBSITE_URL, help=f"URL to scrape (default: {MY_CONFIG.WEBSITE_URL})")
     parser.add_argument("--max-downloads", type=int, default=MY_CONFIG.CRAWL_MAX_DOWNLOADS, help=f"Maximum number of files to download (default: {MY_CONFIG.CRAWL_MAX_DOWNLOADS})")
     parser.add_argument("--depth", type=int, default=MY_CONFIG.CRAWL_MAX_DEPTH, help=f"Maximum depth to crawl (default: {MY_CONFIG.CRAWL_MAX_DEPTH})")
 

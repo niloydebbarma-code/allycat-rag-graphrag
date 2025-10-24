@@ -1,7 +1,3 @@
-"""
-Vector RAG Query
-"""
-
 import os
 from my_config import MY_CONFIG
 
@@ -12,15 +8,13 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import Settings
 from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.vector_stores.milvus import MilvusVectorStore
+from llama_index.core import VectorStoreIndex
 from dotenv import load_dotenv
 from llama_index.llms.litellm import LiteLLM
 import query_utils
 import time
 import logging
 import json
-
-# Create logs directory if it doesn't exist
-os.makedirs('logs/query', exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO, 
@@ -37,7 +31,7 @@ logger.setLevel(logging.INFO)
 
 def run_query(query: str):
     global query_engine
-    logger.info("-----------------------------------")
+    logger.info (f"-----------------------------------")
     start_time = time.time()
     query = query_utils.tweak_query(query, MY_CONFIG.LLM_MODEL)
     logger.info (f"\nProcessing Query:\n{query}")
@@ -72,9 +66,9 @@ Please provide your answer:"""
                  + f"\nResponse:\n{res}" 
                  + f"\n\n⏱️ Total time: {total_time:.1f} seconds"
                  + f"\n\nResponse Metadata:\n{json.dumps(res.metadata, indent=2)}" 
-                 + f"\nSource Nodes: {[node.node_id for node in res.source_nodes]}"
+                #  + f"\nSource Nodes: {[node.node_id for node in res.source_nodes]}"
                  )
-    logger.info("-----------------------------------")
+    logger.info (f"-----------------------------------")
     
     # Save response and metadata to files
     _save_query_files(query, res, total_time)
@@ -120,36 +114,21 @@ Settings.embed_model = HuggingFaceEmbedding(
 )
 logger.info (f"✅ Using embedding model: {MY_CONFIG.EMBEDDING_MODEL}")
 
-# Connect to vector database based on configuration
-if MY_CONFIG.VECTOR_DB_TYPE == "cloud_zilliz":
-    # Use Zilliz Cloud
-    if not MY_CONFIG.ZILLIZ_CLUSTER_ENDPOINT or not MY_CONFIG.ZILLIZ_TOKEN:
-        raise ValueError("Cloud database configuration missing. Set ZILLIZ_CLUSTER_ENDPOINT and ZILLIZ_TOKEN in .env")
-    
-    vector_store = MilvusVectorStore(
-        uri=MY_CONFIG.ZILLIZ_CLUSTER_ENDPOINT,
-        token=MY_CONFIG.ZILLIZ_TOKEN,
-        dim=MY_CONFIG.EMBEDDING_LENGTH,
-        collection_name=MY_CONFIG.COLLECTION_NAME,
-        overwrite=False
-    )
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-    logger.info("Connected to cloud vector database")
-else:
-    # Use local Milvus (default)
-    vector_store = MilvusVectorStore(
-        uri=MY_CONFIG.MILVUS_URI_VECTOR,
-        dim=MY_CONFIG.EMBEDDING_LENGTH,
-        collection_name=MY_CONFIG.COLLECTION_NAME,
-        overwrite=False
-    )
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-    logger.info("Connected to local vector database")
+# Connect to Vector RAG only database
+vector_store = MilvusVectorStore(
+    uri = MY_CONFIG.MILVUS_URI_VECTOR,  # Use dedicated Vector-only database
+    dim = MY_CONFIG.EMBEDDING_LENGTH,
+    collection_name = MY_CONFIG.COLLECTION_NAME, 
+    overwrite=False  # so we load the index from db
+)
+storage_context = StorageContext.from_defaults(vector_store=vector_store)
+logger.info (f"✅ Connected to Vector-only Milvus instance: {MY_CONFIG.MILVUS_URI_VECTOR}")
 
-# Load Document Index from database
+# Load Document Index from DB
+
 index = VectorStoreIndex.from_vector_store(
     vector_store=vector_store, storage_context=storage_context)
-logger.info("Vector index loaded successfully")
+logger.info (f"✅ Loaded Vector-only index from: {MY_CONFIG.MILVUS_URI_VECTOR}")
 
 # Setup LLM
 logger.info (f"✅ Using LLM model : {MY_CONFIG.LLM_MODEL}")
@@ -172,7 +151,7 @@ queries = [
 for query in queries:
     run_query(query)
 
-logger.info("-----------------------------------")
+logger.info (f"-----------------------------------")
 
 while True:
     # Get user input

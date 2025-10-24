@@ -1,4 +1,4 @@
-# Core document processing
+# Core document processing (lightweight)
 docling
 html2text
 
@@ -13,9 +13,8 @@ torch==2.6.0+cpu
 orjson>=3.8.0
 json-repair>=0.7.0
 
-# Vector DB - Supports both cloud (Zilliz) and local (Milvus Lite)
+# Vector DB - Cloud Zilliz support
 pymilvus==2.5.5
-milvus-lite==2.4.11
 
 # LLM Integration
 litellm
@@ -24,7 +23,6 @@ litellm
 llama-index
 llama-index-embeddings-huggingface
 llama-index-llms-litellm
-llama-index-llms-ollama
 llama-index-vector-stores-milvus==0.5.0
 
 # Graph Database
@@ -40,7 +38,7 @@ google-generativeai
 openai>=1.0.0
 fastmcp
 
-# Web Frameworks
+# Web Framework
 flask==2.3.3
 chainlit
 
