@@ -259,6 +259,6 @@ if __name__ == '__main__':
         
     
     # GraphRAG Flask App - Port 8081
-    PORT = int(os.environ.get("PORT", 8081))
+    PORT = int(os.environ.get("PORT", 8080))
     print(f"🚀 GraphRAG Flask app starting on port {PORT}")
     app.run(host="0.0.0.0", debug=False, port=PORT)
