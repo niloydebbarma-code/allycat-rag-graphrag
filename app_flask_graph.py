@@ -164,6 +164,17 @@ def index():
 ## end --- def index():
 
 
+## ----
+@app.route('/health')
+def health():
+    """Health check endpoint for deployment platforms"""
+    if initialization_complete:
+        return jsonify({"status": "healthy", "graphrag": "initialized"}), 200
+    else:
+        return jsonify({"status": "initializing"}), 503
+## end --- def health():
+
+
 ## -----
 @app.route('/chat', methods=['POST'])
 def chat():
