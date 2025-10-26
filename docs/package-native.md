@@ -1,13 +1,15 @@
 # Dockerizing AllyCat (Running Natively)
 
-This guide for packaging up Allycat when running it in 'native python dev' mode.  If you are running AllyCat using docker, see [this guide](package-docker.md) instead.
+This guide for packaging up Allycat when running it in 'native python dev' mode. If you are running AllyCat using docker, see [this guide](package-docker.md) instead.
+
+**Note:** For modern Docker deployments with GraphRAG support and automatic pipeline execution, see [Docker Deployment Guide](docker-deployment-guide.md).
 
 The packaged container will contain the following:
 
 - Downloaded and cleaned web content
-- vector database that has indexed content
-- all runtime code and libraries
-- optionally, ollama model
+- Vector database that has indexed content (and optionally Neo4j graph database for GraphRAG)
+- All runtime code and libraries
+- Optionally, ollama model
 
 ## 1 - Run AllyCat
 

@@ -5,7 +5,10 @@ venv*
 .vscode
 tmp
 
-.env*
+# Ignore actual .env file but allow sample files
+.env
+!.env.*.sample
+!env.sample.txt
 
 *.db
 *.db.lock
@@ -16,3 +19,8 @@ tmp
 __pycache__
 
 chainlit.md
+
+node_modules/
+
+logs/
+logs/*

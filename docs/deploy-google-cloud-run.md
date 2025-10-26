@@ -1,5 +1,7 @@
 # Deploy to Google Cloud Run
 
+**Note:** For modern Docker deployments with GraphRAG support, automatic pipeline execution, and memory optimization, see [Docker Deployment Guide](docker-deployment-guide.md) which includes Cloud Run deployment instructions.
+
 
 ## 1 - Setup Google Cloud CLI
 

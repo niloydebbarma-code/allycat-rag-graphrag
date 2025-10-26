@@ -1,12 +1,14 @@
 # Running Allycat Using Docker
 
-This is the quickest way to try out AllyCat.  No setup needed.  Just need Docker runtime.
+This is the quickest way to try out AllyCat. No setup needed. Just need Docker runtime.
+
+**Note:** This guide covers the basic Docker setup. For production deployments with GraphRAG support and multiple deployment modes (Cloud/Hybrid/Local), see [Docker Deployment Guide](docker-deployment-guide.md).
 
 The docker container has:
 
 - All code and python libraries installed
 - Ollama installed for serving local models
-- Python web UI installed
+- Python web UI installed (Flask and Chainlit interfaces available)
 
 ## Prerequisites:
 

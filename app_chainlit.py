@@ -20,9 +20,15 @@ import query_utils
 vector_index = None
 initialization_complete = False
 
+# Create logs directory if it doesn't exist
+os.makedirs('logs/chainlit', exist_ok=True)
+
 logging.basicConfig(level=logging.WARNING, 
-                    # format='%(asctime)s - %(levelname)s - %(message)s',
                     format='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
+                    handlers=[
+                        logging.FileHandler('logs/chainlit/chainlit_vector.log', mode='a'),
+                        logging.StreamHandler()
+                    ],
                     force=True)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -61,17 +67,17 @@ def initialize():
         
         # Initialize Milvus vector store
         vector_store = MilvusVectorStore(
-            uri = MY_CONFIG.DB_URI ,
+            uri = MY_CONFIG.MILVUS_URI_VECTOR,
             dim = MY_CONFIG.EMBEDDING_LENGTH , 
             collection_name = MY_CONFIG.COLLECTION_NAME,
             overwrite=False  # so we load the index from db
         )
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        logger.info  (f"✅ Connected to Milvus instance: {MY_CONFIG.DB_URI}")
+        logger.info  (f"✅ Connected to Milvus instance: {MY_CONFIG.MILVUS_URI_VECTOR}")
         
         vector_index = VectorStoreIndex.from_vector_store(
             vector_store=vector_store, storage_context=storage_context)
-        logger.info  (f"✅ Loaded index from vector db: {MY_CONFIG.DB_URI}")
+        logger.info  (f"✅ Loaded index from vector db: {MY_CONFIG.MILVUS_URI_VECTOR}")
 
         logger.info("Successfully initialized LLM and vector database")
 
@@ -107,11 +113,8 @@ def extract_thinking_section(response_text):
 
 async def get_llm_response(message):
     """
-    Process the user message and get a response from the LLM.
-    Uses the initialized index for semantic search and LLM for response generation.
-    Shows RAG process using Chainlit Steps.
-    
-    Returns tuple of (response_text, elapsed_time)
+    Process the user message and get a response from the LLM using Vector RAG
+    with structured prompt
     """
     global vector_index, initialization_complete
     
@@ -138,10 +141,34 @@ async def get_llm_response(message):
             step.output = f"Optimized query: {message}"
         ## --- end: Step 1 ---
         
-        # Query the index
-        logger.info("Calling LLM ...")
+        # Query the index with structured prompting
+        logger.info("Calling LLM with structured prompting...")
         t1 = time.time()
-        response = query_engine.query(message)
+        
+        # Get initial vector response
+        vector_response = query_engine.query(message)
+        vector_text = str(vector_response).strip()
+        
+        # Structured prompt
+        structured_prompt = f"""Please provide a comprehensive, well-structured answer using the provided document information.
+
+Question: {message}
+
+Document Information:
+{vector_text}
+
+Instructions:
+1. Provide accurate, factual information based on the documents
+2. Structure your response clearly with proper formatting
+3. Be comprehensive yet concise
+4. Highlight key relationships and important details when relevant
+5. Use bullet points or sections when appropriate for clarity
+
+Please provide your answer:"""
+        
+        # Use structured prompt for final synthesis
+        response = query_engine.query(structured_prompt)
+        
         t2 = time.time()
         if response:
             response_text = str(response).strip()
@@ -269,4 +296,4 @@ async def main(message: cl.Message):
 ## -------
 if __name__ == '__main__':
     logger.info("App starting up...")
-    
+    print(f"{'='*60}\n")

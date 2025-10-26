@@ -6,6 +6,28 @@ To access the services, you might need to get an API key.
 
 Below are a few services that we have tested with Allycat.
 
+## Cerebras
+
+Get an API key at [cloud.cerebras.ai](https://cloud.cerebras.ai/)
+
+Set the following in the `.env` file
+
+```text
+CEREBRAS_API_KEY = your_cerebras_api_key
+LLM_MODEL = 'cerebras/llama3.1-8b'
+```
+
+## Google Gemini
+
+Get an API key at [aistudio.google.com](https://aistudio.google.com/app/apikey)
+
+Set the following in the `.env` file
+
+```text
+GEMINI_API_KEY = your_gemini_api_key
+LLM_MODEL = 'gemini/gemini-1.5-flash'
+```
+
 ## Nebius
 
 Get an API key at [studio.nebius.com](https://studio.nebius.com/)

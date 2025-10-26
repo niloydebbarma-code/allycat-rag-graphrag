@@ -2,6 +2,8 @@
 
 This guide will show you how to run and develop with AllyCat natively.
 
+**Note:** AllyCat supports both traditional Vector RAG and advanced GraphRAG. By default, both Flask and Chainlit interfaces are available for both modes. See [Configuration Guide](configuration.md) for details.
+
 ## Prerequisites: 
 
 - [Python 3.11 Environment](https://www.python.org/downloads/).  You can use [uv](https://docs.astral.sh/uv/) (recommended) or [Anaconda](https://www.anaconda.com/docs/getting-started/getting-started) or [conda-forge](https://conda-forge.org/)

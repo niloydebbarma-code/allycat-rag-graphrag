@@ -1,0 +1,35 @@
+# ============================================
+# BUILD/PIPELINE REQUIREMENTS - Full Pipeline
+# ============================================
+# These packages are ONLY needed for running the pipeline:
+# - Crawling websites (1_crawl_site.py)
+# - Processing files (2_process_files.py) 
+# - Graph extraction (2b_process_graph_phase*.py)
+# - Saving to databases (3*.py)
+#
+# After pipeline completes, these can be REMOVED to save ~300-500 MB RAM
+
+# ============================================
+# Document Processing - REMOVE AFTER PIPELINE
+# ============================================
+docling                 # PDF/HTML to markdown conversion (~100 MB)
+html2text              # HTML processing (~10 MB)
+
+# ============================================
+# Graph Community Detection - REMOVE AFTER PIPELINE
+# ============================================
+igraph                 # Graph analysis library (~50 MB)
+leidenalg             # Leiden algorithm for communities (~30 MB)
+graspologic           # Graph statistics (~40 MB)
+
+# ============================================
+# Development Tools - REMOVE AFTER PIPELINE
+# ============================================
+milvus-lite==2.4.11    # Local Milvus server (not needed if using cloud Zilliz) (~100 MB)
+tqdm                   # Progress bars (nice to have, but not essential)
+ipykernel             # Jupyter support (only for development)
+fastmcp               # MCP support (only for development)
+
+# ============================================
+# Total Savings if Removed: ~350-500 MB
+# ============================================

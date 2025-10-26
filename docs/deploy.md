@@ -1,8 +1,10 @@
 # Deploying Allycat
 
-We made Allycat easy to use / customize and deploy.
+We made Allycat easy to use, customize and deploy.
 
 This guide will show you how to package AllyCat so it's ready to deploy.
+
+**Note:** For modern Docker-based deployments with GraphRAG support, see [Docker Deployment Guide](docker-deployment-guide.md) which covers Cloud, Hybrid, and Local deployment modes.
 
 **Table of Contents**
 

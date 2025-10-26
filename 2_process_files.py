@@ -2,6 +2,7 @@ import os, sys
 import shutil
 from pathlib import Path
 from docling.document_converter import DocumentConverter
+import html2text
 import logging
 import hashlib
 from my_config import MY_CONFIG
@@ -49,6 +50,7 @@ def cleanup_duplicate_markdown_files(processed_dir):
 def process_files(crawl_dir, processed_dir):
     """
     Process all files in the crawl directory and convert them to markdown.
+    Uses html2text for HTML/HTM files and docling for PDFs and other documents.
     
     Args:
         crawl_dir (str): Directory containing files to process
@@ -63,7 +65,11 @@ def process_files(crawl_dir, processed_dir):
     shutil.os.makedirs(processed_dir, exist_ok=True)
     logger.info (f"✅ Cleared  processed data directory :  {processed_dir}")
     
-    converter = DocumentConverter(format_options={"preserve_links": True})
+    # Initialize converters
+    docling_converter = DocumentConverter(format_options={"preserve_links": True})
+    html_converter = html2text.HTML2Text()
+    html_converter.ignore_links = False
+    html_converter.ignore_images = False
     
     files_processed = 0
     errors = 0
@@ -71,19 +77,36 @@ def process_files(crawl_dir, processed_dir):
     
     for input_file in input_files:
         file_ext = input_file.suffix.lower()
+        markdown_content = None
+        
         try:
-            result = converter.convert(input_file)
-            markdown_content = result.document.export_to_markdown()
+            # Process HTML/HTM files with html2text
+            if file_ext in ['.html', '.htm']:
+                with open(input_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    html_content = f.read()
+                markdown_content = html_converter.handle(html_content)
+                logger.debug(f"Converted HTML '{input_file}' with html2text")
             
-            md_file_name = os.path.join(processed_dir, f"{input_file.stem}.md")
-            with open(md_file_name, "w", encoding="utf-8") as md_file:
-                md_file.write(markdown_content)
+            # Process TXT files directly
+            elif file_ext == '.txt':
+                with open(input_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    markdown_content = f.read()
+                logger.debug(f"Processed TXT '{input_file}' directly")
+            
+            # Process PDF and other documents with docling
+            else:
+                result = docling_converter.convert(input_file)
+                markdown_content = result.document.export_to_markdown()
+                logger.debug(f"Converted '{input_file}' with docling")
+            
+            # Save markdown file
+            if markdown_content:
+                md_file_name = os.path.join(processed_dir, f"{input_file.stem}.md")
+                with open(md_file_name, "w", encoding="utf-8") as md_file:
+                    md_file.write(markdown_content)
                 
-            logger.debug(f"Converted '{input_file}' --> '{md_file_name}'")
-            files_processed += 1
-            
-            # Track file type statistics
-            file_type_stats[file_ext] = file_type_stats.get(file_ext, 0) + 1
+                files_processed += 1
+                file_type_stats[file_ext] = file_type_stats.get(file_ext, 0) + 1
             
         except Exception as e:
             errors += 1

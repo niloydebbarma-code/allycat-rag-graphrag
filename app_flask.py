@@ -1,13 +1,7 @@
 from flask import Flask, g, render_template, request, jsonify
 import os
 import logging
-from dotenv import load_dotenv
 import time
-
-os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
-
-# Load environment variables from .env file
-load_dotenv()
 
 # Import llama-index and related libraries
 from llama_index.core import VectorStoreIndex, StorageContext
@@ -17,6 +11,11 @@ from llama_index.core import Settings
 from llama_index.llms.litellm import LiteLLM
 from my_config import MY_CONFIG
 import query_utils
+
+
+os.environ['HF_ENDPOINT'] = MY_CONFIG.HF_ENDPOINT
+
+
 
 app = Flask(__name__)
 
@@ -54,19 +53,19 @@ def initialize():
         print("✅ Using LLM model : ", MY_CONFIG.LLM_MODEL)
         Settings.llm = llm
         
-        # Initialize Milvus vector store
+        # Initialize Milvus vector store for Vector RAG only
         vector_store = MilvusVectorStore(
-            uri = MY_CONFIG.DB_URI ,
+            uri = MY_CONFIG.MILVUS_URI_VECTOR ,  # Use dedicated Vector-only database
             dim = MY_CONFIG.EMBEDDING_LENGTH , 
             collection_name = MY_CONFIG.COLLECTION_NAME,
             overwrite=False  # so we load the index from db
         )
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        print ("✅ Connected to Milvus instance: ", MY_CONFIG.DB_URI )
+        print ("✅ Connected to Vector-only Milvus instance: ", MY_CONFIG.MILVUS_URI_VECTOR )
         
         vector_index = VectorStoreIndex.from_vector_store(
             vector_store=vector_store, storage_context=storage_context)
-        print ("✅ Loaded index from vector db:", MY_CONFIG.DB_URI )
+        print ("✅ Loaded Vector-only index from:", MY_CONFIG.MILVUS_URI_VECTOR )
 
         logging.info("Successfully initialized LLM and vector database")
     
@@ -103,8 +102,8 @@ def chat():
 
 def get_llm_response(message):
     """
-    Process the user message and get a response from the LLM.
-    Uses the initialized index for semantic search and LLM for response generation.
+    Process the user message and get a response from the LLM using Vector RAG
+    with structured prompting
     """
     global vector_index, initialization_complete
     
@@ -120,12 +119,35 @@ def get_llm_response(message):
         # Create a query engine from the index
         query_engine = vector_index.as_query_engine()
         
-        # Query the index
+        # Apply query optimization
         message = query_utils.tweak_query(message, MY_CONFIG.LLM_MODEL)
-        response = query_engine.query(message)
         
-        if response:
-            response_text = str(response).strip()
+        # Get initial vector response
+        vector_response = query_engine.query(message)
+        vector_text = str(vector_response).strip()
+        
+        # Structured prompt
+        structured_prompt = f"""Please provide a comprehensive, well-structured answer using the provided document information.
+
+Question: {message}
+
+Document Information:
+{vector_text}
+
+Instructions:
+1. Provide accurate, factual information based on the documents
+2. Structure your response clearly with proper formatting
+3. Be comprehensive yet concise
+4. Highlight key relationships and important details when relevant
+5. Use bullet points or sections when appropriate for clarity
+
+Please provide your answer:"""
+        
+        # Use structured prompt for final synthesis
+        final_response = query_engine.query(structured_prompt)
+        
+        if final_response:
+            response_text = str(final_response).strip()
         
     except Exception as e:
         logging.error(f"Error getting LLM response: {str(e)}")
@@ -134,7 +156,7 @@ def get_llm_response(message):
     end_time = time.time()
     
     # add timing stat
-    response_text += f"\n(time taken: {(end_time - start_time):.1f} secs)"
+    response_text += f"\n⏱️ *Total time: {(end_time - start_time):.1f} seconds*"
     return response_text
     
 ## --- end: def get_llm_response():
@@ -160,7 +182,8 @@ if __name__ == '__main__':
         # g.init_error = str(e)
         
     
-    # app.run(debug=False)
-    PORT = int(os.environ.get("PORT", 8080))
+    # Vector RAG Flask App - Configurable port via environment
+    PORT = MY_CONFIG.FLASK_VECTOR_PORT
+    print(f"🚀 Vector RAG Flask app starting on port {PORT}")
     app.run(host="0.0.0.0", debug=False, port=PORT)
 ## -- end main ----

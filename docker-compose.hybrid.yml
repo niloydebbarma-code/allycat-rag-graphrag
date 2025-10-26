@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  allycat-graphrag-hybrid:
+    image: allycat-graphrag:hybrid
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        INSTALL_OLLAMA: "false"
+        INSTALL_LOCAL_VECTOR_DB: "true"
+    container_name: allycat-hybrid
+    ports:
+      - "${DOCKER_PORT:-8080}:${DOCKER_APP_PORT:-8080}"
+    environment:
+      - LLM_RUN_ENV=cloud
+      - VECTOR_DB_TYPE=local
+      - APP_TYPE=${APP_TYPE:-flask_graph}
+      - AUTO_RUN_PIPELINE=${AUTO_RUN_PIPELINE:-false}
+      - DOCKER_APP_PORT=${DOCKER_APP_PORT:-8080}
+      - FLASK_GRAPH_PORT=${FLASK_GRAPH_PORT:-8080}
+      - FLASK_VECTOR_PORT=${FLASK_VECTOR_PORT:-8081}
+      - CHAINLIT_GRAPH_PORT=${CHAINLIT_GRAPH_PORT:-8083}
+      - CHAINLIT_VECTOR_PORT=${CHAINLIT_VECTOR_PORT:-8082}
+    env_file:
+      - .env
+    volumes:
+      - ./workspace:/allycat/workspace
+    command: ["deploy"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${DOCKER_APP_PORT:-8080}"]
+      interval: 60s
+      timeout: 60s
+      retries: 1
+      start_period: 1500s
