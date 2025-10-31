@@ -1,4 +1,4 @@
-name: ci
+name: Docker Image Push to Docker Hub
 
 on:
   workflow_dispatch:  # Manual trigger only
@@ -26,5 +26,5 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          tags: "${{ vars.DOCKER_USER }}/docker-build-cloud-demo:latest"
+          tags: "${{ vars.DOCKER_USER }}/allycat-rag-graphrag:latest"
           outputs: "type=registry"
